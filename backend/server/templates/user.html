@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+
+    {% if title %}
+    <title>Crypto Wizard - {{ title }}</title>
+    {% else %}
+    <title>Crypto Wizard</title>
+    {% endif %}
+</head>
+
+<body>
+    <header class="text-gray-400 bg-gray-900 body-font">
+        <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+            <a href="{{ url_for('home') }}" class="flex title-font font-medium items-center text-white mb-4 md:mb-0">
+                <img src="{{ url_for('static', filename='images/cryptowizard.png') }}" class="w-12 h-12 rounded-full"
+                    viewBox="0 0 24 24" />
+                <span class="ml-3 text-xl">CryptoWizard</span>
+            </a>
+            <nav class="md:ml-auto md:mr-auto flex flex-wrap items-center text-lg justify-center">
+                <button><a class="mr-10 hover:text-white" href="{{ url_for('home') }}">Home</a></button>
+                <button><a class="mr-10 hover:text-white" href="{{ url_for('user') }}">User</a></button>
+                <button><a class="mr-10 hover:text-white" href="{{ url_for('purchase') }}">Purchase</a></button>
+            </nav>
+            <div class="space-x-2">
+                {% if current_user.is_authenticated %}
+                <button
+                    class="inline-flex items-center bg-gray-800 border-0 py-1 px-7 focus:outline-none hover:bg-gray-700 hover:text-white rounded text-base mt-4 md:mt-0">
+                    <a href="{{ url_for('account') }}">Account</a>
+                </button>
+                <button
+                    class="inline-flex items-center bg-gray-800 border-0 py-1 px-7 focus:outline-none hover:bg-gray-700 hover:text-white rounded text-base mt-4 md:mt-0">
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                    {% else %}
+                    <button
+                        class="inline-flex items-center bg-gray-800 border-0 py-1 px-7 focus:outline-none hover:bg-gray-700 hover:text-white rounded text-base mt-4 md:mt-0">
+                        <a href="{{ url_for('login') }}">Login</a>
+                    </button>
+                    <button
+                        class="inline-flex items-center bg-gray-800 border-0 py-1 px-7 focus:outline-none hover:bg-gray-700 hover:text-white rounded text-base mt-4 md:mt-0">
+                        <a href="{{ url_for('register') }}">Register</a>
+                        {% endif %}
+                    </button>
+            </div>
+        </div>
+    </header>
+
+
+    {% block content %}
+    {% if current_user.is_authenticated %}
+    <div class="text-gray-400 bg-gray-900 body-font relative">
+        <div class="container mx-auto flex px-5 py-12 md:flex-row flex-col items-center">
+            <div
+                class="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:mx-auto w-full mt-10 md:mt-0">
+                <div class="flex items-center justify-center">
+                    <img src="{{ url_for('static', filename='images/user-users.png') }}" class="w-16 h-16 rounded-full"
+                        viewBox="0 0 24 24" />
+                </div></br>
+
+                <span>
+                    <h2 class="hover:text-white mb-2 font-bold text-3xl text-center">{{ current_user.username }}
+                    </h2>
+                    <p class="hover:text-white mb-2 text-xl text-center"><b>Balance : {{ current_user.balance }}$</b>
+                    </p>
+                </span>
+                <p class="hover:text-white mb-2 text-xl text-center">{{ current_user.email }}</p> <br>
+                <div class="relative mb-4">
+                    <div class="flex items-center justify-center space-x-20">
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <a href="{{ url_for('transaction_deposit') }}">Deposit</a>
+                        </button>
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <a href="{{ url_for('purchase') }}">Purchase</a>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% if transactions.items %}
+    <div class="text-gray-400 bg-gray-900 body-font relative">
+        <div class="container mx-auto flex px-4 py-12 items-center">
+            <div
+                class="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:mx-auto w-full mt-10 md:mt-0">
+
+                {% for transaction in transactions.items %}
+                <a class=" text-center hover:text-white">
+                    Bot {{ transaction.bot_id }} purchased
+                    at {{ transaction.date.strftime('%H:%M') }}
+                    on {{ transaction.date.strftime('%d.%m.%Y') }}
+                    for {{ transaction.price }}$
+                </a>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div> <br>
+    {% else %}
+    {% endif %}
+
+
+    <section class="text-gray-400 bg-gray-900 body-font">
+        <div class="container px-5 py-24 mx-auto">
+            <div class="flex flex-wrap justify-center -m-4">
+
+                {% for bot in bots.items %}
+                {% if transactions %}
+                {% for transaction in transactions.items %}
+                {% if bot.id == transaction.bot_id %}
+                <div class="p-4 lg:w-1/3">
+                    <div
+                        class="h-full bg-gray-800 bg-opacity-40 px-8 pt-12 pb-12 rounded-lg overflow-hidden text-center relative">
+                        <h1 class="title-font sm:text-2xl text-xl font-medium text-white mb-3"> {{ bot.name }}</h1>
+                        <p class="mb-2 text-xl text-center"> Price : {{ bot.price }}$ </p>
+                        <p class="leading-relaxed mb-3">{{ bot.info }}</p>
+                        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <div class=>
+                                <a href="{{ url_for('bot'+bot.id|string) }}">Run</a>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="text-gray-400 bg-gray-900 body-font">
+        <div
+            class="container px-5 py-24 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
+            <div class="w-64 flex-shrink-0 md:mx-0 mx-auto text-center md:text-left md:mt-0 mt-10">
+                <a class="flex title-font font-medium items-center md:justify-start justify-center text-white">
+                    <img src="{{ url_for('static', filename='images/cryptowizard.png') }}" class="w-12 h-12 rounded-full" viewBox="0 0 24 24" />
+                    <span class="ml-3 text-xl">CryptoWizard</span>
+                </a>
+                <p class="mt-2 text-sm text-gray-500">Always stay with your wizard for the future.</p>
+            </div>
+            <div class="flex-grow flex flex-wrap md:pr-20 -mb-10 md:text-left text-center order-first">
+                <div class="lg:w-1/4 md:w-1/2 w-full px-4">
+                    <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">Our Bots</h2>
+                    <nav class="list-none mb-10">
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Sunum Botu</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">RSI Bot</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">MACD Bot</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">EMA Bot</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Bollinger Bands Bot</a>
+                        </li>
+                    </nav>
+                </div>
+                <div class="lg:w-1/4 md:w-1/2 w-full px-4">
+                    <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">Crypto Market</h2>
+                    <nav class="list-none mb-10">
+                        <li>
+                            <a class="text-gray-400 hover:text-white" href='https://www.binance.com/tr'
+                                target="_blank">Binance</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white" href='https://www.coinbase.com/tr/'
+                                target='_blank'>Coinbase</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white" href='https://www.mexc.com/tr-TR'
+                                target='_blank'>MEXC</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white" href='https://www.okx.com/tr'
+                                target='_blank'>OKX</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white" href='https://testnet.binancefuture.com'
+                                target='_blank'>Binance Test</a>
+                        </li>
+                    </nav>
+                </div>
+                <div class="lg:w-1/4 md:w-1/2 w-full px-4">
+                    <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">Platform</h2>
+                    <nav class="list-none mb-10">
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Pricing</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Road Map</a>
+                        </li>
+                    </nav>
+                </div>
+                <div class="lg:w-1/4 md:w-1/2 w-full px-4">
+                    <h2 class="title-font font-medium text-white tracking-widest text-sm mb-3">Company</h2>
+                    <nav class="list-none mb-10">
+                        <li>
+                            <a class="text-gray-400 hover:text-white">About Us</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Careers</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Blog</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Plans</a>
+                        </li>
+                        <li>
+                            <a class="text-gray-400 hover:text-white">Security</a>
+                        </li>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-800 bg-opacity-75">
+            <div class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row">
+                <p class="text-gray-400 text-sm text-center sm:text-left">© 2024 CryptoWizard —
+                    <a href="https://twitter.com/knyttneve" class="text-gray-500 ml-1" rel="noopener noreferrer"
+                        target="_blank">@cryptowizard</a>
+                </p>
+                <span class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
+                    <a class="text-gray-400">
+                        <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            class="w-5 h-5" viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+                        </svg>
+                    </a>
+                    <a class="ml-3 text-gray-400">
+                        <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            class="w-5 h-5" viewBox="0 0 24 24">
+                            <path
+                                d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z">
+                            </path>
+                        </svg>
+                    </a>
+                    <a class="ml-3 text-gray-400">
+                        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
+                            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zm1.5-4.87h.01"></path>
+                        </svg>
+                    </a>
+                    <a class="ml-3 text-gray-400">
+                        <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="0" class="w-5 h-5" viewBox="0 0 24 24">
+                            <path stroke="none"
+                                d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z">
+                            </path>
+                            <circle cx="4" cy="4" r="2" stroke="none"></circle>
+                        </svg>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    {% else %}
+    <div class="content-section">
+        <div class="media">
+            <div class="media-body">
+                <span><a class="home-text">You are not logged in.
+                    </a><a class="home-text" href="{{ url_for('login') }}">Click here to log in.
+                    </a></span>
+            </div>
+        </div>
+    </div>
+
+
+    {% endif %}
+    {% endblock content %}
+</body>
+
+</html>

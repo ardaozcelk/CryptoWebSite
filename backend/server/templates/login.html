@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+
+  {% if title %}
+  <title>Crypto Wizard - {{ title }}</title>
+  {% else %}
+  <title>Crypto Wizard</title>
+  {% endif %}
+</head>
+<body>
+    
+
+{% block content %}
+
+
+<div class="bg-gray-900 flex items-center justify-center min-h-screen">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md shadow-md">
+        <div
+        class="flex title-font font-medium items-center text-white mb-4 md:mb-0 flex items-center justify-center">
+        <img src="{{ url_for('static', filename='images/cryptowizard.png') }}"
+            class="w-11 h-11 rounded-full" viewBox="0 0 24 24" />
+        <span class="ml-3 text-l">CryptoWizard</span>
+    </div> <br>
+      <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="bg-gray-600 bg-opacity-20 rounded-lg py-2 px-3 mb-4 flex items-center shadow-md">
+            {% if form.email.errors %}
+            {{ form.email.label(class="w-32 text-xl text-white") }}
+            {{ form.email(class="flex-1 px-2 text-gray-900 rounded-lg") }}
+            <div class=" bg-red-900 text-l rounded-lg py-2 px-3 leading-7 text-center items-center justify-center shadow-md">
+                {% for error in form.email.errors %}
+                <span class="text-white">{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.email.label(class="w-32 text-xl text-white") }}
+            {{ form.email(class=" flex-1 px-2 text-gray-900 rounded-lg") }}
+            {% endif %}
+        </div>
+        <div class="bg-gray-600 bg-opacity-20 rounded-lg py-2 px-3 mb-4 flex items-center shadow-md">
+            {{ form.password.label(class="w-32 text-xl text-white") }}
+            {% if form.password.errors %}
+            {{ form.password(class="flex-1 px-2 text-gray-900 rounded-lg") }}
+            <div class="w-full bg-gray-600 bg-opacity-20 text-l space-x-5 text-gray-800 rounded-lg py-2 px-3 leading-7 mb-4 flex items-center justify-center">
+                {% for error in form.password.errors %}
+                <span>{{ error }}</span>
+                {% endfor %}
+            </div>
+            {% else %}
+            {{ form.password(class="flex-1 px-2 text-gray-900 rounded-lg") }}
+            {% endif %}
+        </div>
+        <div class="flex items-center justify-center">
+            {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded") }}
+        </div>
+        <div class="flex items-center justify-center">
+            <div class="">
+                {{ form.remember(class="form-check-input") }}
+                {{ form.remember.label(class="text-xs") }}
+            </div>
+            <div class="ml-2 text-s">
+                <small><a class="ml-2 hover:text-white" href="{{ url_for('reset_password') }}">Forgot Password?</a> </small>
+            </div>
+        </div>
+        <div class="border-top flex items-center justify-center">
+            <small class="text-muted">
+                Need An Account? <a class="ml-2 hover:text-white" href="{{ url_for('register') }}">Join Us Today</a>
+            </small>
+        </div>
+      </form>
+    </div>
+</div>
+
+{% endblock content %}
+</body>
+</html>

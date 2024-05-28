@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="text-gray-400 bg-gray-900 body-font relative">
+    <div class="container mx-auto flex px-5 py-12 md:flex-row flex-col items-center">
+        <div
+            class="lg:w-2/6 md:w-1/2 bg-gray-800 bg-opacity-50 rounded-lg p-8 flex flex-col md:mx-auto w-full mt-10 md:mt-0">
+            <div>
+                <span>
+                    <h2 class="hover:text-white mb-2 font-bold text-3xl text-center">{{ current_user.username }}
+                    </h2>
+                    <p class="hover:text-white mb-2 text-xl text-center"><b>Balance: {{ current_user.balance }}$</b></p>
+                </span> <br>
+                <form method="POST" action="">
+                    {{ form.hidden_tag() }}
+                    <fieldset class="form-group">
+                        <legend class="hover:text-white text-l mb-4">Deposit Money</legend>
+                        <div
+                            class="w-full bg-gray-600 bg-opacity-20 text-l space-x-14 text-gray-800 rounded-lg py-2 px-3 leading-7 mb-2 flex items-center justify-center">
+                            {{ form.amount.label(class="text-xl text-white") }}
+                            {% if form.amount.errors %}
+                            {{ form.amount(class="form-control form-control-lg is-invalid") }}
+                            <div class="bg-red-900 text-l rounded-lg py-2 px-3 leading-7 text-center items-center justify-center shadow-md">
+                                {% for error in form.amount.errors %}
+                                <span class="text-white">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.amount(class="text-gray-600 rounded-lg px-2") }}
+                            {% endif %}
+                        </div>
+                    </fieldset>
+                    <div class="flex items-center justify-center">
+                        {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded") }}
+                    </div> <br> <br> 
+                    <div class="flex  items-center space-x-5 mb-4 md:mb-0 flex items-center justify-center">
+                        <img src="{{ url_for('static', filename='images/visa.png') }}" class="w-20 h-20 rounded "
+                            viewBox="0 0 24 24" />
+                            <img src="{{ url_for('static', filename='images/master-card.png') }}" class="w-20 h-20 rounded"
+                            viewBox="0 0 24 24" />
+                            <img src="{{ url_for('static', filename='images/american-express.png') }}" class="w-20 h-20 rounded"
+                            viewBox="0 0 24 24" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+   
+
+
+</div>
+</div>
+{% endblock content %}
